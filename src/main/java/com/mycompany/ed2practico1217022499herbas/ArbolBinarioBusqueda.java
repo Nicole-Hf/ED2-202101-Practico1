@@ -556,6 +556,14 @@ public class ArbolBinarioBusqueda<K extends Comparable<K>, V>
         return claveSucesora;
     }
     
+    private NodoBinario<K,V> nodoSucesorInOrden(NodoBinario<K,V> nodoActual) {
+        NodoBinario<K,V> nodoSucesor = nodoActual.getHijoDerecho();
+        while (!NodoBinario.esNodoVacio(nodoSucesor.getHijoIzquierdo())) {
+            nodoSucesor = nodoSucesor.getHijoIzquierdo();
+        }
+        return nodoSucesor;
+    }
+    
     /** 15. Implemente un método privado que reciba un nodo binario de un 
      * árbol binario y que retorne cuál sería su predecesor inorden 
      * de la clave de dicho nodo.
@@ -584,6 +592,14 @@ public class ArbolBinarioBusqueda<K extends Comparable<K>, V>
         return clavePredecesora;
     }
     
+    private NodoBinario<K,V> nodoPredecesorInOrden(NodoBinario<K,V> nodoActual) {
+        NodoBinario<K,V> nodoPredecesor = nodoActual.getHijoIzquierdo();
+        while (nodoPredecesor.getHijoDerecho() != null) {
+            nodoPredecesor = nodoPredecesor.getHijoDerecho();
+        }
+        return nodoPredecesor;
+    }
+    
     /** 16. Implemente un método que retorne la menor llave en un 
      * árbol binario de búsqueda.
      * */
@@ -608,31 +624,34 @@ public class ArbolBinarioBusqueda<K extends Comparable<K>, V>
         return this.nroNodosConInOrden() == Math.pow(2, altura) - 1;
     }    
     
-    public boolean esArbolLleno1() {       
-        boolean lleno = false;
-        if (this.esArbolVacio()) {
-            return false;
-        }       
-        Stack<NodoBinario<K,V>> pilaNodos = new Stack<>();
-        pilaNodos.push(this.raiz);
-        while (!pilaNodos.isEmpty()) {
-            NodoBinario<K,V> nodoActual = pilaNodos.pop();           
-            if (!nodoActual.esVacioHijoDerecho()) {
-                pilaNodos.push(nodoActual.getHijoDerecho());
-            }           
-            if (!nodoActual.esVacioHijoIzquierdo()) {
-                pilaNodos.push(nodoActual.getHijoIzquierdo());
-            }
-            if (!nodoActual.esVacioHijoIzquierdo() && !nodoActual.esVacioHijoDerecho()) {
-                lleno = true;
-            } 
-            if (!nodoActual.esVacioHijoIzquierdo() && nodoActual.esVacioHijoDerecho()) {
-                lleno = false;
-            }
-            if (nodoActual.esVacioHijoIzquierdo() && !nodoActual.esVacioHijoDerecho()) {
-                lleno = false;
-            }
+    private boolean esLleno(NodoBinario<K,V> nodoActual) {       
+        if (NodoBinario.esNodoVacio(nodoActual)) {
+            return true;
         }
-        return lleno;
-    }   
+        if (nodoActual.esHoja()) {
+            return true;
+        }
+        boolean lleno = true;
+        if (cantidadNodos(nodoActual.getHijoIzquierdo()) != cantidadNodos(nodoActual.getHijoDerecho())) {
+            lleno = false;
+        }
+        if (altura(nodoActual.getHijoIzquierdo()) != altura(nodoActual.getHijoDerecho())) {
+            lleno = false;
+        }
+        boolean esLlenoIzquierdo = esLleno(nodoActual.getHijoIzquierdo());
+        boolean esLlenoDerecho = esLleno(nodoActual.getHijoDerecho());
+        return lleno && esLlenoIzquierdo && esLlenoDerecho;               
+    }  
+    
+    private int cantidadNodos(NodoBinario<K,V> nodoActual) {
+        if (NodoBinario.esNodoVacio(nodoActual)) {
+            return 0;
+        }
+        if (nodoActual.esHoja()) {
+            return 1;
+        }
+        int cantidadIzquierda = cantidadNodos(nodoActual.getHijoIzquierdo());
+        int cantidadDerecha = cantidadNodos(nodoActual.getHijoDerecho());
+        return cantidadIzquierda + cantidadDerecha;
+    }
 }

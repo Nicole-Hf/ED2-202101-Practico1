@@ -358,7 +358,7 @@ public class ArbolMViasBusqueda<K extends Comparable<K>, V>
 
     @Override
     public int nivel() {
-        return this.nivel(this.raiz);
+        return nivel(this.raiz);
     }
     
     private int nivel(NodoMVias<K, V> nodoActual) {
@@ -543,7 +543,32 @@ public class ArbolMViasBusqueda<K extends Comparable<K>, V>
      * */
     @Override
     public boolean hayHojasEnUltimoNivel() {
-        return !this.esArbolVacio();
+        if (this.raiz == null) {
+            return false;
+        }
+        int nivelRaiz = nivel();
+        return hayHojasEnUltimoNivel(this.raiz,nivelRaiz,0);
+    }
+    
+    private boolean hayHojasEnUltimoNivel(NodoMVias<K,V> nodoActual, int ultimoNivel, int nivel) {
+        if (NodoMVias.esNodoVacio(nodoActual)) {
+            return true;
+        }
+        if (nodoActual.esHoja()) {
+            return true;
+        }
+        if (ultimoNivel == nivel) {
+            if (!nodoActual.esHoja()) {
+                return false;
+            }
+            return true;
+        }
+        for (int i = 0; i < orden; i++) {
+            if (hayHojasEnUltimoNivel(nodoActual.getHijo(i),ultimoNivel,nivel+1) == false) {
+                return false;
+            }         
+        }
+        return true;
     }
     
     /** 19. Implemente un método que retorne verdadero si un 
@@ -552,23 +577,28 @@ public class ArbolMViasBusqueda<K extends Comparable<K>, V>
      * */
     @Override
     public boolean tieneHojasOTodosHijos() {
+        if (this.raiz == null) {
+            return false;
+        }
         return tieneHojasOTodosHijos(this.raiz);
     }
     
     private boolean tieneHojasOTodosHijos(NodoMVias<K,V> nodoActual) {
-        boolean resultado = false;
         if (NodoMVias.esNodoVacio(nodoActual)) {
-            return resultado;
+            return true;
         }
         if (nodoActual.esHoja()) {
-            resultado = true;
-        }      
-        for (int i = 0; i < this.orden; i++) {
-            if (nodoActual.cantidadDeHijosNoVacios() == this.orden) {
-                resultado = this.tieneHojasOTodosHijos(nodoActual.getHijo(i));
-            }                
-        }     
-        return resultado;
+            return true;
+        }
+        if (nodoActual.cantidadDeHijosNoVacios() < orden) {
+            return false;
+        }
+        for (int i = 0; i < orden; i++) {
+            if (tieneHojasOTodosHijos(nodoActual.getHijo(i)) == false) {
+                return false;
+            }
+        }
+        return true;
     }
     
     /** 20. Para un árbol m vías implementar un método que reciba otro 
@@ -584,23 +614,26 @@ public class ArbolMViasBusqueda<K extends Comparable<K>, V>
         if (NodoMVias.esNodoVacio(nodoActual) && NodoMVias.esNodoVacio(nodoCopia)) {
             return true;
         }
-        boolean resultado = false;
+        if (NodoMVias.esNodoVacio(nodoActual) || NodoMVias.esNodoVacio(nodoCopia)) {
+            return false;
+        }        
         if (nodoActual.esHoja() && nodoCopia.esHoja()) {
             if (nodoActual.cantidadDeClaveNoVacias() == nodoCopia.cantidadDeClaveNoVacias()) {
-                for (int i = 0; i < nodoActual.cantidadDeClaveNoVacias(); i++) {
-                    K claveActual = nodoActual.getClave(i);
-                    K claveCopia = nodoCopia.getClave(i);
-                    if (claveCopia.compareTo(claveActual) == 0) {
-                        resultado = true;
-                    }
-                }
+                return true;
             }
+            return false;
+        }
+        if (nodoActual.esHoja() || nodoCopia.esHoja()) {           
+            return false;
+        }
+        if (nodoActual.cantidadDeClaveNoVacias() != nodoCopia.cantidadDeClaveNoVacias()) {
+            return false;
         }
         for (int i = 0; i < this.orden; i++) {
-            if (!nodoActual.esHijoVacio(i) && !nodoCopia.esHijoVacio(i)) {
-                resultado = sonIguales(nodoActual.getHijo(i),nodoCopia.getHijo(i));
+            if (sonIguales(nodoActual.getHijo(i),nodoCopia.getHijo(i)) == false) {
+                return false;
             }
         }
-        return resultado;
+        return true;
     }     
 }
