@@ -335,14 +335,14 @@ public class ArbolBinarioBusqueda<K extends Comparable<K>, V>
             int nroDeNodosDelNivel = colaDeNodos.size();
             int posicion = 0;
             while (posicion < nroDeNodosDelNivel) {
-                NodoBinario<K,V> nodoActual = colaDeNodos.poll();
+                NodoBinario<K,V> nodoActual = colaDeNodos.poll();                
                 if (!nodoActual.esVacioHijoIzquierdo()) {
                     colaDeNodos.offer(nodoActual.getHijoIzquierdo());
-                    System.out.print("  ("+nodoActual.getHijoIzquierdo().getClave()+")↙");
+                    System.out.print("  ("+nodoActual.getHijoIzquierdo().getClave()+")_|");
                 }
                 if (!nodoActual.esVacioHijoDerecho()) {
                     colaDeNodos.offer(nodoActual.getHijoDerecho());
-                    System.out.print("↘("+nodoActual.getHijoDerecho().getClave()+")");
+                    System.out.print("|_("+nodoActual.getHijoDerecho().getClave()+")");
                 }
                 posicion++;
             }
