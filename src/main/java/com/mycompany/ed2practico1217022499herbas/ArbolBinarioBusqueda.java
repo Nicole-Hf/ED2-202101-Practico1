@@ -205,7 +205,28 @@ public class ArbolBinarioBusqueda<K extends Comparable<K>, V>
 
     @Override
     public int nivel() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (this.esArbolVacio()) {
+            return 0;
+        }
+        int nivelArbol = 0;
+        Queue<NodoBinario<K,V>> colaNodos = new LinkedList<>();
+        colaNodos.offer(this.raiz);
+        while (!colaNodos.isEmpty()) {
+            int nroNodosNivel = colaNodos.size();
+            int posicion = 0;
+            while (posicion < nroNodosNivel) {
+                NodoBinario<K,V> nodoActual = colaNodos.poll();
+                if (!nodoActual.esVacioHijoIzquierdo()) {
+                    colaNodos.offer(nodoActual.getHijoIzquierdo());
+                }
+                if (!nodoActual.esVacioHijoDerecho()) {
+                    colaNodos.offer(nodoActual.getHijoDerecho());
+                }
+                posicion++;
+            }
+            nivelArbol++;
+        }
+        return nivelArbol;
     }
 
     @Override
